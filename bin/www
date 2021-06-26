@@ -13,7 +13,7 @@ var http = IS_PROD ? require('https') : require('http');
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(IS_PROD ? '8088' : '3000');
+var port = normalizePort(IS_PROD ? '8081' : '3000');
 app.set('port', port);
 console.info('port', port)
 
