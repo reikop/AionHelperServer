@@ -13,9 +13,9 @@ var http = IS_PROD ? require('https') : require('http');
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(IS_PROD ? '8081' : '3000');
+var port = normalizePort(IS_PROD ? '8088' : '3000');
 app.set('port', port);
-
+console.info('port', port)
 
 /**
  * Create HTTP server.
@@ -24,13 +24,12 @@ var options;
 if(IS_PROD){
   options = {
     key: fs.readFileSync('/app/cert/privkey.pem'),
-    cert: fs.readFileSync('/app/cert/cert.pem'),
-    ca: fs.readFileSync('/app/cert/reikop_com.ca')
+    cert: fs.readFileSync('/app/cert/cert.pem')
   };
 }
 
 
-var server = http.createServer(app, options);
+var server = IS_PROD ? http.createServer(options, app) :  http.createServer(app)
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -93,9 +92,12 @@ function onError(error) {
  */
 
 function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+  console.info('bind', bind)
+  if(!IS_PROD){
+    var addr = server.address();
+    var bind = typeof addr === 'string'
+      ? 'pipe ' + addr
+      : 'port ' + addr.port;
+    debug('Listening on ' + bind);
+  }
 }
