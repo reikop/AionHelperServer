@@ -18,7 +18,7 @@ var http = IS_PROD ? require('https') : require('http');
 
 var port = normalizePort(IS_PROD ? '8081' : '3000');
 app.set('port', port);
-console.info('port', port)
+app.use(cors());
 
 /**
  * Create HTTP server.
@@ -95,11 +95,6 @@ function onError(error) {
  */
 
 function onListening() {
-  app.all('/*', function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "https://reikop.github.io");
-    res.header("Access-Control-Allow-Headers", "*");
-    next();
-  });
   if(!IS_PROD){
     var addr = server.address();
     var bind = typeof addr === 'string'
