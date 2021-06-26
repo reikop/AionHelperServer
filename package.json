@@ -1,0 +1,18 @@
+{
+  "name": "aionhelperserver",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "args-parser": "^1.2.0",
+    "axios": "^0.21.1",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "lodash": "^4.17.21",
+    "mariadb": "^2.5.4",
+    "morgan": "~1.9.1"
+  }
+}
