@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 var fs = require('fs');
+var cors = require('cors');
 var IS_PROD = process.env.NODE_ENV === "production";
 /**
  * Module dependencies.
@@ -8,6 +9,8 @@ var IS_PROD = process.env.NODE_ENV === "production";
 var app = require('../app');
 var debug = require('debug')('aionhelperserver:server');
 var http = IS_PROD ? require('https') : require('http');
+
+
 
 /**
  * Get port from environment and store in Express.
@@ -92,7 +95,11 @@ function onError(error) {
  */
 
 function onListening() {
-  console.info('bind', bind)
+  app.all('/*', function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "https://reikop.github.io");
+    res.header("Access-Control-Allow-Headers", "*");
+    next();
+  });
   if(!IS_PROD){
     var addr = server.address();
     var bind = typeof addr === 'string'
