@@ -32,12 +32,7 @@ router.get('/api/character/:serverId/:charId', (async (req, res, next) => {
 
 router.get('/api/server/:id', (async (req, res) => {
   const {id} = req.params;
-  const list = await servers.getServerList(id);
-  if(list.length > 0){
-    res.json(list[0]);
-  }else{
-    res.json({});
-  }
+  res.json(await servers.getServerList(id));
 }))
 
 router.patch('/api/server/:id', (async (req, res) => {

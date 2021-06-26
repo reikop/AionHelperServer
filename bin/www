@@ -6,10 +6,8 @@ var IS_PROD = process.env.NODE_ENV === "production";
  */
 
 var app = require('../app');
-var debug = require('debug')('aionhelperserver:server');
+
 var http = IS_PROD ? require('https') : require('http');
-
-
 
 /**
  * Get port from environment and store in Express.
@@ -94,6 +92,7 @@ function onError(error) {
 
 function onListening() {
   if(!IS_PROD){
+    var debug = require('debug')('aionhelperserver:server');
     var addr = server.address();
     var bind = typeof addr === 'string'
       ? 'pipe ' + addr
