@@ -17,7 +17,9 @@ class Database {
 
     async query(query, values){
         const conn = await this.getConnection();
-        return conn.query(query, values);
+        return conn.query(query, values).catch(e => {
+            console.error(e)
+        });
     }
 
 }

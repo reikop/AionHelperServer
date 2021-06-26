@@ -32,7 +32,19 @@ router.get('/api/character/:serverId/:charId', (async (req, res, next) => {
 
 router.get('/api/server/:id', (async (req, res) => {
   const {id} = req.params;
-  res.json(await servers.getServerList(id));
+  const list = await servers.getServerList(id);
+  if(list.length > 0){
+    res.json(list[0]);
+  }else{
+    res.json({});
+  }
+}))
+
+router.patch('/api/server/:id', (async (req, res) => {
+  const {id} = req.params;
+  const {server} = req.body;
+  console.info(id, server)
+  res.json(servers.registServer(id, server));
 }))
 
 async function findStat({serverId, charId}){
