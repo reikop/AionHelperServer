@@ -30,7 +30,7 @@ router.get('/api/character/:serverId/:charId', (async (req, res, next) => {
 //   }
 // }))
 
-router.get('/server/:id', (async (req, res) => {
+router.get('/api/server/:id', (async (req, res) => {
   const {id} = req.params;
   res.json(await servers.getServerList(id));
 }))
