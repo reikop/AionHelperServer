@@ -19,7 +19,7 @@ router.get('/api/character/:serverId/:charId', (async (req, res, next) => {
   res.json(await findStat({serverId, charId}));
 }))
 
-router.get('/api/items', async (req, res, next) => {
+router.all('/api/items', async (req, res, next) => {
   const {keyword} = req.query;
   res.json(await items.getItems(keyword))
 })
