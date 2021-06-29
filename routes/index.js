@@ -31,8 +31,9 @@ router.get('/api/items/sync', (req, res, next) => {
   types.forEach(type => {
     axios.get(`https://aioncodex.com/query.php?a=${type}&l=krc&_=`+(new Date().getTime()))
         .then(value => {
+          console.info(type, "start.")
           items.putItems(value.data);
-          console.info(type, "ended")
+          console.info(type, "ended.")
         })
   })
   res.json({});
