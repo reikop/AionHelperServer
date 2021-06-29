@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const servers = require('../database/servers')
+const items = require('../database/items')
 const axios = require('axios');
 const _ = require('lodash');
 /* GET home page. */
@@ -17,6 +18,25 @@ router.get('/api/character/:serverId/:charId', (async (req, res, next) => {
   const {serverId, charId} = req.params;
   res.json(await findStat({serverId, charId}));
 }))
+
+router.get('/api/items', async (req, res, next) => {
+  const {keyword} = req.query;
+  res.json(await items.getItems(keyword))
+})
+
+router.get('/api/items/sync', (req, res, next) => {
+
+  // const types = ['wing']
+  const types = ['weapon', 'armor', 'accessory', 'wing', 'making', 'consumable', 'skillrelated']
+  types.forEach(type => {
+    axios.get(`https://aioncodex.com/query.php?a=${type}&l=krc&_=`+(new Date().getTime()))
+        .then(value => {
+          items.putItems(value.data);
+          console.info(type, "ended")
+        })
+  })
+  res.json({});
+})
 //
 // router.get('/who', (async (req, res, next) => {
 //   const {server, name} = req.query;
@@ -38,7 +58,6 @@ router.get('/api/server/:id', (async (req, res) => {
 router.patch('/api/server/:id', (async (req, res) => {
   const {id} = req.params;
   const {server} = req.body;
-  console.info(id, server)
   res.json(servers.registServer(id, server));
 }))
 

@@ -13,15 +13,35 @@ class Database {
     }
 
     createTable(){
-        const ddl = `
+        const guild_server = `
         create table IF NOT EXISTS guild_server
         (
             guild_id varchar(255) not null primary key,
             servers int null
         )`;
-        this.pool.run(ddl)
+        this.pool.run(guild_server)
+        const items = `
+        create table IF NOT EXISTS items
+        (
+            id varchar(255) not null primary key,
+            name varchar(255) not null,
+            jaso varchar(255) not null
+            
+        )`;
+        this.pool.run(items)
+        this.pool.run(`CREATE INDEX IF NOT EXISTS item_jaso ON items (id, jaso);`)
     }
-
+    insert(query, values){
+        return new Promise((resolve, reject) => {
+            this.pool.run(query, values, (error, row) => {
+                if(error){
+                    reject(error)
+                }else{
+                    resolve(row);
+                }
+            });
+        })
+    }
     query(query, values){
         return new Promise(((resolve, reject) => {
             this.pool.get(query, values, (error, row) => {
@@ -33,8 +53,18 @@ class Database {
             });
         }))
     }
-
-
+    list(query, values){
+        return new Promise(((resolve, reject) => {
+            this.pool.all(query, values, (error, row) => {
+                console.info(query, values,error, row)
+                if(error){
+                    reject(error)
+                }else{
+                    resolve(row);
+                }
+            });
+        }))
+    }
 }
 // spring.datasource.username=aionmini
 // spring.datasource.password=miniaion123
