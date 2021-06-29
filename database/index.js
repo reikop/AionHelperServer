@@ -56,7 +56,6 @@ class Database {
     list(query, values){
         return new Promise(((resolve, reject) => {
             this.pool.all(query, values, (error, row) => {
-                console.info(query, values,error, row)
                 if(error){
                     reject(error)
                 }else{
