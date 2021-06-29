@@ -20,7 +20,7 @@ router.get('/api/character/:serverId/:charId', (async (req, res, next) => {
 }))
 
 router.all('/api/items', async (req, res, next) => {
-  const {keyword} = req.query;
+  const keyword = req.query.keyword || req.params.keyword || req.body.keyword;
   res.json(await items.getItems(keyword))
 })
 
