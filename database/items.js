@@ -1,13 +1,13 @@
 const Hangul = require('hangul-js')
+const _ = require('lodash');
 const database = require('./index')
 module.exports = {
     async getItems(name){
         if(name){
-            const jaso = Hangul.disassembleToString(name);
-            const query = `
-        select * from items where jaso like '%'||?||'%' limit 50
-        `
-            return await database.list(query, [jaso]).catch(e => console.error(e));
+            const jasos = name.split(/\s/gi).map(n => Hangul.disassembleToString(n));
+            const names = _.range(jasos.length).map(() => ` jaso like '%'||?||'%' `).join(" AND ");
+            const query = `select * from items where ${names} limit 35`;
+            return await database.list(query, jasos).catch(e => console.error(e));
         }else{
             return [];
         }
