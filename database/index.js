@@ -4,7 +4,7 @@ class Database {
         // this.pool = mariadb.createPool({
         //     host: args.host,
         //     port: args.port,
-        //     user: args.user,
+        //     uster: args.user,
         //     password: args.password,
         //     database: args.database
         // });
@@ -30,6 +30,17 @@ class Database {
         )`;
         this.pool.run(items)
         this.pool.run(`CREATE INDEX IF NOT EXISTS item_jaso ON items (id, jaso);`)
+        this.pool.run(`
+        CREATE TABLE IF NOT EXISTS char_data(
+            CHAR_NAME VARCHAR(255),
+            CHAR_ID VARCHAR(255),
+            SERVER_ID VARCHAR(255),
+            JSON_DATA TEXT,
+            CHAR_DATA TEXT,
+            UPDATE_DT DATETIME,
+            CONSTRAINT CHAR_PK PRIMARY KEY(CHAR_ID, SERVER_ID)
+        )
+        `)
     }
     insert(query, values){
         return new Promise((resolve, reject) => {

@@ -2,54 +2,31 @@ var express = require('express');
 var router = express.Router();
 const servers = require('../database/servers')
 const items = require('../database/items')
+const charData = require('../database/charData')
 const axios = require('axios');
 const _ = require('lodash');
+axios.defaults.timeout = 3000;
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
 
 router.get('/api/suggest', (async (req, res, next) => {
-  const {server, keyword} = req.query;
-  res.json(await findChar(server, keyword));
+    const {server, keyword} = req.query;
+    const {history, data} = await findChar(server, keyword);
+    res.setHeader("HISTORY_MODE", String(history));
+    res.json(data);
 }))
 
 router.get('/api/character/:serverId/:charId', (async (req, res, next) => {
   const {serverId, charId} = req.params;
-  res.json(await findStat({serverId, charId}));
+  const {history, data, updated} = await findStat({serverId, charId})
+  res.setHeader("HISTORY_MODE", String(history));
+  res.setHeader("UPDATED", updated || "");
+  res.json(data);
 }))
 
 router.all('/api/items', async (req, res, next) => {
   const keyword = req.query.keyword || req.params.keyword || req.body.keyword;
   res.json(await items.getItems(keyword))
 })
-
-router.get('/api/items/sync', (req, res, next) => {
-
-  // const types = ['wing']
-  const types = ['weapon', 'armor', 'accessory', 'wing', 'making', 'consumable', 'skillrelated']
-  types.forEach(type => {
-    axios.get(`https://aioncodex.com/query.php?a=${type}&l=krc&_=`+(new Date().getTime()))
-        .then(value => {
-          console.info(type, "start.")
-          items.putItems(value.data);
-          console.info(type, "ended.")
-        })
-  })
-  res.json({});
-})
-//
-// router.get('/who', (async (req, res, next) => {
-//   const {server, name} = req.query;
-//   const char = await findChar(server, name);
-//   const c = _.find(char, c => c.charName.replace(/(<([^>]+)>)/ig, "").toUpperCase() === name.toUpperCase());
-//   if(c != null) {
-//     c.charName = c.charName.replace(/(<([^>]+)>)/ig, "");
-//     res.json(await findStat(c));
-//   }else{
-//     res.json({});
-//   }
-// }))
 
 router.get('/api/server/:id', (async (req, res) => {
   const {id} = req.params;
@@ -64,21 +41,48 @@ router.patch('/api/server/:id', (async (req, res) => {
 
 async function findStat({serverId, charId}){
   const data = {"keyList":["character_stats","character_equipments","character_abyss","character_stigma"]};
-  const response = await axios.put(`https://api-aion.plaync.com/game/v2/classic/merge/server/${serverId}/id/${charId}`, data);
-  return response.data;
+  try{
+    const response = await axios.put(`https://api-aion.plaync.com/game/v2/classic/merge/server/${serverId}/id/${charId}`, data);
+    charData.updateJSON({
+      serverId, charId, jsonData: JSON.stringify(response.data)
+    }).then(r => console.info(r))
+    return {
+      history: false,
+      data: response.data
+    };
+  }catch (e) {
+    const stat = await charData.findCharStat(serverId, charId);
+    return {
+      history: true,
+      data: JSON.parse(stat && stat.JSON_DATA || "{}"),
+      updated: stat && stat.UPDATE_DT
+    }
+  }
+
 }
+
 async function findChar(server, name){
   try{
     const {data} = await axios.get(`https://api-aion.plaync.com/search/v1/characters?classId=&pageNo=1&pageSize=50&query=${encodeURIComponent(name)}&raceId=&serverId=${server}`);
     if(data != null && data.documents.length > 0){
-      return data.documents;
+      charData.updateChars(data.documents).then(r => console.info(r));
+      return {
+        history: false,
+        data: data.documents
+      };
     }else{
-      return [];
+      return {
+        history: false,
+        data: [],
+      }
     }
   }catch (e) {
-    return [];
+    const list = await charData.findChar(server, name);
+    return {
+      history: true,
+      data: list.map(n => JSON.parse(n.CHAR_DATA))
+    };
   }
 }
-
 
 module.exports = router;
