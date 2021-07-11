@@ -43,13 +43,13 @@ async function findStat({serverId, charId}){
   const data = {"keyList":["character_stats","character_equipments","character_abyss","character_stigma"]};
   try{
     const response = await axios.put(`https://api-aion.plaync.com/game/v2/classic/merge/server/${serverId}/id/${charId}`, data);
-    charData.updateJSON({
-      serverId, charId, jsonData: JSON.stringify(response.data)
-    }).then(() => {})
-    return {
-      history: false,
-      data: response.data
-    };
+    // charData.updateJSON({
+    //   serverId, charId, jsonData: JSON.stringify(response.data)
+    // }).then(() => {})
+    // return {
+    //   history: false,
+    //   data: response.data
+    // };
   }catch (e) {
     const stat = await charData.findCharStat(serverId, charId);
     return {
@@ -65,7 +65,7 @@ async function findChar(server, name){
   try{
     const {data} = await axios.get(`https://api-aion.plaync.com/search/v1/characters?classId=&pageNo=1&pageSize=50&query=${encodeURIComponent(name)}&raceId=&serverId=${server}`);
     if(data != null && data.documents.length > 0){
-      charData.updateChars(data.documents).then(() => {});
+      // charData.updateChars(data.documents).then(() => {});
       return {
         history: false,
         data: data.documents
