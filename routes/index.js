@@ -46,10 +46,10 @@ async function findStat({serverId, charId}){
     // charData.updateJSON({
     //   serverId, charId, jsonData: JSON.stringify(response.data)
     // }).then(() => {})
-    // return {
-    //   history: false,
-    //   data: response.data
-    // };
+    return {
+      history: false,
+      data: response.data
+    };
   }catch (e) {
     const stat = await charData.findCharStat(serverId, charId);
     return {
