@@ -33,9 +33,8 @@ module.exports = {
     },
 
     async updateJSON({ charId, serverId, jsonData}){
-        console.info(charId, serverId)
         return await database.insert(`
-            UPDATE char_data SET JSON_DATA = ? , UPDATE_DT = datetime('now') WHERE CHAR_ID = ? AND SERVER_ID = ?
+            UPDATE char_data SET JSON_DATA = ? , UPDATE_DT = datetime('now', 'localtime') WHERE CHAR_ID = ? AND SERVER_ID = ?
         `, [jsonData, charId, serverId])
     },
 

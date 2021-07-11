@@ -5,7 +5,7 @@ const items = require('../database/items')
 const charData = require('../database/charData')
 const axios = require('axios');
 const _ = require('lodash');
-axios.defaults.timeout = 3000;
+axios.defaults.timeout = 2000;
 /* GET home page. */
 
 router.get('/api/suggest', (async (req, res, next) => {
@@ -45,7 +45,7 @@ async function findStat({serverId, charId}){
     const response = await axios.put(`https://api-aion.plaync.com/game/v2/classic/merge/server/${serverId}/id/${charId}`, data);
     charData.updateJSON({
       serverId, charId, jsonData: JSON.stringify(response.data)
-    }).then(r => console.info(r))
+    }).then(() => {})
     return {
       history: false,
       data: response.data
@@ -65,7 +65,7 @@ async function findChar(server, name){
   try{
     const {data} = await axios.get(`https://api-aion.plaync.com/search/v1/characters?classId=&pageNo=1&pageSize=50&query=${encodeURIComponent(name)}&raceId=&serverId=${server}`);
     if(data != null && data.documents.length > 0){
-      charData.updateChars(data.documents).then(r => console.info(r));
+      charData.updateChars(data.documents).then(() => {});
       return {
         history: false,
         data: data.documents
