@@ -5,8 +5,9 @@ module.exports = {
     async getItems(name){
         if(name){
             const jasos = name.split(/\s/gi).map(n => Hangul.disassembleToString(n));
-            const names = _.range(jasos.length).map(() => ` jaso like '%'||?||'%' `).join(" AND ");
+            const names = _.range(jasos.length).map(() => ` jaso like concat('%',?,'%') `).join(" AND ");
             const query = `select * from items where ${names} limit 35`;
+            console.info(query, jasos)
             return await database.list(query, jasos).catch(e => console.error(e));
         }else{
             return [];
@@ -15,11 +16,14 @@ module.exports = {
 
     async putItems(data) {
         if(data.aaData){
-            data.aaData.forEach(([id, , nameTag]) => {
+            const params = data.aaData.map(([id, , nameTag]) => {
                 const name = nameTag.replace(/<\/?[^>]+(>|$)/g, "");
                 const jaso = Hangul.disassembleToString(name.replace(/\s/gi, ''));
-                database.insert("INSERT OR REPLACE INTO items(id, name, jaso) VALUES (?, ?, ?)", [id, name, jaso])
+                return [id, name, jaso, name, jaso]
             })
+            return await database.batchInsert("INSERT INTO items(id, name, jaso) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE name = ?, jaso = ?", params);
+        }else{
+            return [];
         }
     }
 }

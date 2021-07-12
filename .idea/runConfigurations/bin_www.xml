@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="bin\www" type="NodeJSConfigurationType" application-parameters=" -- --host=10.0.0.250 --port=3306 --user=aionmini --password=miniaion123 --database=aionmini" path-to-js-file="./bin/www" working-dir="$PROJECT_DIR$">
+  <configuration default="false" name="bin\www" type="NodeJSConfigurationType" application-parameters=" -- --host=reikop.com --port=3307 --user=aionmini --password=&quot;miniAION123!@#&quot; --database=aionmini" path-to-js-file="./bin/www" working-dir="$PROJECT_DIR$">
     <envs>
       <env name="DEBUG" value="aionhelperserver:*" />
       <env name="TZ" value="Asia/Seoul" />
