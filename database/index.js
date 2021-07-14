@@ -84,7 +84,7 @@ class Database {
         return new Promise((resolve, reject) => {
             connection.query(query, values).then(value => {
                 connection.release();
-                resolve(value);
+                resolve(value[0]);
             }, reason => {
                 connection.release();
                 reject(reason)

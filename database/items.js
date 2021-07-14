@@ -7,7 +7,7 @@ module.exports = {
             const jasos = name.split(/\s/gi).map(n => Hangul.disassembleToString(n));
             const names = _.range(jasos.length).map(() => ` jaso like concat('%',?,'%') `).join(" AND ");
             const query = `select * from items where ${names} limit 35`;
-            console.info(query, jasos)
+            // console.info(query, jasos)
             return await database.list(query, jasos).catch(e => console.error(e));
         }else{
             return [];

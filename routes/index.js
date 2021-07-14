@@ -9,8 +9,9 @@ axios.defaults.timeout = 2500;
 /* GET home page. */
 
 router.get('/api/suggest', (async (req, res, next) => {
+    let s = req.header("history_mode");
     const {server, keyword} = req.query;
-    const {history, data} = await findChar(server, keyword);
+    const {history, data} = await findChar(server, keyword, s === 'true');
     res.setHeader("HISTORY_MODE", String(history));
     res.json(data);
 }))
@@ -30,7 +31,12 @@ router.all('/api/items', async (req, res, next) => {
 
 router.get('/api/server/:id', (async (req, res) => {
   const {id} = req.params;
-  res.json(await servers.getServerList(id));
+  const server = await servers.getServerList(id).catch(e => console.info(e));
+  res.json(server);
+}))
+router.get('/api/server', (async (req, res) => {
+  const server = await servers.getServerListAll().catch(e => console.info(e));
+  res.json(server);
 }))
 
 router.patch('/api/server/:id', (async (req, res) => {
@@ -70,18 +76,24 @@ async function findStat({serverId, charId}){
     };
   }catch (e) {
     const stat = await charData.findCharStat(serverId, charId);
-    console.info(stat)
     return {
       history: true,
-      data: JSON.parse(stat && stat.JSON_DATA || "{}"),
+      data: JSON.parse(stat && stat.json_data || "{}"),
       updated: stat && stat.UPDATE_DT
     }
   }
 
 }
 
-async function findChar(server, name){
+async function findChar(server, name, historyMode){
   try{
+    if(historyMode){
+      const list = await charData.findChar(server, name);
+      return {
+        history: true,
+        data: list.map(n => JSON.parse(n.CHAR_DATA))
+      };
+    }
     const {data} = await axios.get(`https://api-aion.plaync.com/search/v1/characters?classId=&pageNo=1&pageSize=50&query=${encodeURIComponent(name)}&raceId=&serverId=${server}`);
     if(data != null && data.documents.length > 0){
       charData.updateChars(data.documents)
