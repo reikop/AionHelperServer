@@ -51,22 +51,6 @@ class Database {
         await connection.release();
     }
 
-    async batchInsert(query, valuesArray){
-        const connection = await this.getConnection();
-        await connection.beginTransaction();
-        return new Promise((resolve, reject) => {
-            connection.batch(query, valuesArray).then(value => {
-                connection.commit();
-                connection.release();
-                resolve(value);
-            }, reason => {
-                connection.rollback();
-                connection.release();
-                reject(reason)
-            })
-        })
-    }
-
     async insert(query, values) {
         const connection = await this.getConnection();
         return new Promise((resolve, reject) => {
@@ -90,6 +74,12 @@ class Database {
                 reject(reason)
             })
         })
+    }
+    async batch(query, array) {
+        const connection = await this.getConnection();
+        const result = await Promise.all(array.map(param => connection.query(query, param)))
+        await connection.release();
+        return result;
     }
     async list(query, values) {
         const connection = await this.getConnection();

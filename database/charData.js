@@ -4,7 +4,7 @@ module.exports = {
     async findChar(server, name){
         return await database.list(
             `SELECT char_name, char_id, server_id, CHAR_DATA FROM char_data 
-                    WHERE char_name like concat('%',?,'%')
+                    WHERE char_name like concat(?,'%')
                     AND SERVER_ID = ?
                     LIMIT 50
                     `,
@@ -25,9 +25,10 @@ module.exports = {
             const {charId, serverId, charName} = c;
             const name = charName.replace(/<\/?[^>]+(>|$)/g, "");
             const data = JSON.stringify(c);
+            console.info(charId, serverId, name)
             return [charId, serverId, name, data, name, data];
         })
-        database.batchInsert(`INSERT INTO char_data
+        database.batch(`INSERT INTO char_data
                 (char_id, server_id, CHAR_NAME, CHAR_DATA) 
             VALUES (?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE
@@ -37,7 +38,6 @@ module.exports = {
             //     console.info(d)
             // })
             .catch(e => console.info(e))
-
     },
 
     async updateJSON({ charId, serverId, jsonData}){
