@@ -25,7 +25,6 @@ module.exports = {
             const {charId, serverId, charName} = c;
             const name = charName.replace(/<\/?[^>]+(>|$)/g, "");
             const data = JSON.stringify(c);
-            console.info(charId, serverId, name)
             return [charId, serverId, name, data, name, data];
         })
         database.batch(`INSERT INTO char_data
