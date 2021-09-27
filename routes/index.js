@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const servers = require('../database/servers')
+const music = require('../database/music')
 const items = require('../database/items')
 const charData = require('../database/charData')
 const axios = require('axios');
@@ -33,16 +34,40 @@ router.get('/api/server/:id', (async (req, res) => {
   const {id} = req.params;
   const server = await servers.getServerList(id).catch(e => console.info(e));
   res.json(server);
-}))
+}));
 router.get('/api/server', (async (req, res) => {
   const server = await servers.getServerListAll().catch(e => console.info(e));
   res.json(server);
-}))
+}));
 
 router.patch('/api/server/:id', (async (req, res) => {
   const {id} = req.params;
   const {server} = req.body;
   res.json(servers.registServer(id, server));
+}));
+
+router.get('/api/music/:id', (async (req, res) => {
+  const {id} = req.params;
+  const server = await music.getServerList(id).catch(e => console.info(e));
+  res.json(server);
+}));
+router.get('/api/music', (async (req, res) => {
+  const server = await music.getServerListAll().catch(e => console.info(e));
+  res.json(server);
+}));
+
+router.patch('/api/music/:id', (async (req, res) => {
+  const {id} = req.params;
+  const {server} = req.body;
+  res.json(music.registServer(id, server));
+}));
+
+router.all('/putitem',  (async (req, res) => {
+  const json = require('../update.json');
+  items.jsonItems(json).then(r => {
+    console.info("ended");
+  });
+  res.json({});
 }));
 
 

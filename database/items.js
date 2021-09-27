@@ -14,6 +14,19 @@ module.exports = {
         }
     },
 
+    async jsonItems(json){
+        if(json){
+            const params = json.map(([id, , link]) => {
+                const name = link.replace(/<\/?[^>]+(>|$)/g, "");
+                const jaso = Hangul.disassembleToString(name.replace(/\s/gi, ''));
+                return [id, name, jaso, name, jaso]
+            })
+            return await database.batch("INSERT INTO items(id, name, jaso) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE name = ?, jaso = ?", params);
+        }else{
+            return [];
+        }
+    },
+
     async putItems(data) {
         if(data.aaData){
             const params = data.aaData.map(([id, , nameTag]) => {
