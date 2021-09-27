@@ -58,8 +58,7 @@ router.get('/api/music', (async (req, res) => {
 
 router.patch('/api/music/:id', (async (req, res) => {
   const {id} = req.params;
-  const {server} = req.body;
-  res.json(music.registServer(id, server));
+  res.json(music.registServer(id, req.body.id));
 }));
 
 router.all('/putitem',  (async (req, res) => {
