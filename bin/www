@@ -1,62 +1,47 @@
 #!/usr/bin/env node
 var fs = require('fs');
-var IS_PROD = process.env.NODE_ENV === "production";
+var args = require('args-parser')(process.argv);
+var IS_SSL = function(){
+  return typeof args.sslkey !== "boolean"
+      && typeof args.sslcert !== "boolean"
+      && typeof args.sslkey === "string"
+      && typeof args.sslcert === "string"
+}();
 /**
  * Module dependencies.
  */
 
 var app = require('../app');
 
-var http = IS_PROD ? require('https') : require('http');
+var http = IS_SSL ? require('https') : require('http');
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(IS_PROD ? '8081' : '3000');
+var port = 8081
 app.set('port', port);
 
 /**
  * Create HTTP server.
  */
 var options;
-if(IS_PROD){
+if(IS_SSL){
   options = {
-    key: fs.readFileSync('/app/cert/privkey.pem'),
-    cert: fs.readFileSync('/app/cert/cert.pem')
+    key: fs.readFileSync(args.sslkey),
+    cert: fs.readFileSync(args.sslcert)
   };
 }
 
 
-var server = IS_PROD ? http.createServer(options, app) :  http.createServer(app)
+var server = IS_SSL ? http.createServer(options, app) :  http.createServer(app)
 
 /**
  * Listen on provided port, on all network interfaces.
  */
-
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
-
-/**
- * Normalize a port into a number, string, or false.
- */
-
-function normalizePort(val) {
-  var port = parseInt(val, 10);
-
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
-
-  if (port >= 0) {
-    // port number
-    return port;
-  }
-
-  return false;
-}
 
 /**
  * Event listener for HTTP server "error" event.
@@ -91,12 +76,12 @@ function onError(error) {
  */
 
 function onListening() {
-  if(!IS_PROD){
-    var debug = require('debug')('aionhelperserver:server');
-    var addr = server.address();
-    var bind = typeof addr === 'string'
-      ? 'pipe ' + addr
-      : 'port ' + addr.port;
-    debug('Listening on ' + bind);
-  }
+  // if(!IS_SSL){
+  //   var debug = require('debug')('aionhelperserver:server');
+  //   var addr = server.address();
+  //   var bind = typeof addr === 'string'
+  //     ? 'pipe ' + addr
+  //     : 'port ' + addr.port;
+  //   debug('Listening on ' + bind);
+  // }
 }
