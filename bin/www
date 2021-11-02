@@ -1,12 +1,7 @@
 #!/usr/bin/env node
 var fs = require('fs');
 var args = require('args-parser')(process.argv);
-var IS_SSL = function(){
-  return typeof args.sslkey !== "boolean"
-      && typeof args.sslcert !== "boolean"
-      && typeof args.sslkey === "string"
-      && typeof args.sslcert === "string"
-}();
+var IS_SSL = true;
 /**
  * Module dependencies.
  */
