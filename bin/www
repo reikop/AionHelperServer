@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 var fs = require('fs');
-var args = require('args-parser')(process.argv);
-var IS_SSL = true;
+
+const SSL_KEY = process.env.HTTP_TLS_KEY;
+const SSL_CERT = process.env.HTTP_TLS_CERT;
+
+const IS_SSL = SSL_KEY != null && SSL_CERT != null;
 /**
  * Module dependencies.
  */
@@ -23,8 +26,8 @@ app.set('port', port);
 var options;
 if(IS_SSL){
   options = {
-    key: fs.readFileSync(args.sslkey),
-    cert: fs.readFileSync(args.sslcert)
+    key: fs.readFileSync(SSL_KEY),
+    cert: fs.readFileSync(SSL_CERT)
   };
 }
 
