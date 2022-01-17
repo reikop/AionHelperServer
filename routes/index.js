@@ -60,10 +60,13 @@ router.patch('/api/music/:id', (async (req, res) => {
   const {id} = req.params;
   res.json(music.registServer(id, req.body.id));
 }));
+router.delete('/api/music/:gid/:id', (async (req, res) => {
+  res.json(music.deregistServer(req.body.gid, req.body.id));
+}));
 
 router.all('/putitem',  (async (req, res) => {
   const json = require('../update.json');
-  items.jsonItems(json).then(r => {
+  items.jsonItems(json.data).then(r => {
     console.info("ended");
   });
   res.json({});
