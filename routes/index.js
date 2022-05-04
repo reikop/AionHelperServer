@@ -6,22 +6,19 @@ const items = require('../database/items')
 const charData = require('../database/charData')
 const axios = require('axios');
 const _ = require('lodash');
+const database = require("../database");
 axios.defaults.timeout = 2500;
 /* GET home page. */
 
 router.get('/api/suggest', (async (req, res, next) => {
-    let s = req.header("history_mode");
     const {server, keyword} = req.query;
-    const {history, data} = await findChar(server, keyword, s === 'true');
-    res.setHeader("HISTORY_MODE", String(history));
+    const {data} = await findChar(server, keyword);
     res.json(data);
 }))
 
 router.get('/api/character/:serverId/:charId', (async (req, res, next) => {
   const {serverId, charId} = req.params;
-  const {history, data, updated} = await findStat({serverId, charId})
-  res.setHeader("HISTORY_MODE", String(history));
-  res.setHeader("UPDATED", updated || "");
+  const data = await findStat({serverId, charId})
   res.json(data);
 }))
 
@@ -94,52 +91,38 @@ async function findStat({serverId, charId}){
   const data = {"keyList":["character_stats","character_equipments","character_abyss","character_stigma"]};
   try{
     const response = await axios.put(`https://api-aion.plaync.com/game/v2/classic/merge/server/${serverId}/id/${charId}`, data);
-    // charData.updateJSON({
-    //   serverId, charId, jsonData: JSON.stringify(response.data)
-    // }).then(() => {})
-    return {
-      history: false,
-      data: response.data
-    };
+    database.insert(`
+INSERT INTO char_hit
+     (char_id, server_id, CHAR_NAME, hit, last_hit_dt)
+     VALUES (?, ?, null, 1, now()) ON DUPLICATE KEY
+    UPDATE hit = hit+1 , last_hit_dt = now()
+      `, [charId, serverId]).then(e => {});
+
+    return response.data;
   }catch (e) {
-    const stat = await charData.findCharStat(serverId, charId);
-    return {
-      history: true,
-      data: JSON.parse(stat && stat.json_data || "{}"),
-      updated: stat && stat.UPDATE_DT
-    }
+    console.error(e)
+    return null;
   }
 
 }
 
-async function findChar(server, name, historyMode){
+async function findChar(server, name){
   try{
-    if(historyMode){
-      const list = await charData.findChar(server, name);
-      return {
-        history: true,
-        data: list.map(n => JSON.parse(n.CHAR_DATA))
-      };
-    }
     const {data} = await axios.get(`https://api-aion.plaync.com/search/v1/characters?classId=&pageNo=1&pageSize=50&query=${encodeURIComponent(name)}&raceId=&serverId=${server}`);
     if(data != null && data.documents.length > 0){
       // charData.updateChars(data.documents)
       return {
-        history: false,
         data: data.documents
       };
     }else{
       return {
-        history: false,
         data: [],
       }
     }
   }catch (e) {
-    const list = await charData.findChar(server, name);
     return {
-      history: true,
-      data: list.map(n => JSON.parse(n.CHAR_DATA))
-    };
+      data: [],
+    }
   }
 }
 
