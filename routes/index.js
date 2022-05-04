@@ -91,14 +91,16 @@ async function findStat({serverId, charId}){
   const data = {"keyList":["character_stats","character_equipments","character_abyss","character_stigma"]};
   try{
     const response = await axios.put(`https://api-aion.plaync.com/game/v2/classic/merge/server/${serverId}/id/${charId}`, data);
-    database.insert(`
+    await database.insert(`
 INSERT INTO char_hit
      (char_id, server_id, CHAR_NAME, hit, last_hit_dt)
      VALUES (?, ?, null, 1, now()) ON DUPLICATE KEY
     UPDATE hit = hit+1 , last_hit_dt = now()
-      `, [charId, serverId]).then(e => {});
+      `, [charId, serverId]);
 
-    return response.data;
+    const hit = await database.query("SELECT * FROM char_hit WHERE char_id = ? and server_id = ?", [charId, serverId]);
+
+    return {...response.data, hit};
   }catch (e) {
     console.error(e)
     return null;
