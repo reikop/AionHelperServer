@@ -1,11 +1,11 @@
 FROM node:16-alpine
 
-RUN mkdir -p /usr/src/bot
-WORKDIR /usr/src/bot
+WORKDIR /usr/src/app
 
-COPY package.json /usr/src/bot
+COPY package*.json ./
+
 RUN npm install
-COPY . /usr/src/bot
+COPY . .
 
 EXPOSE 8081
 
