@@ -12,6 +12,7 @@ app.use(function (req, res, next) {
     const corsWhitelist = [
         'https://reikop.github.io',
         'https://reikop.io',
+        'http://localhost',
     ];
     if (corsWhitelist.indexOf(req.headers.origin) !== -1) {
         res.header('Access-Control-Allow-Origin', req.headers.origin);
