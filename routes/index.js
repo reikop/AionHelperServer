@@ -2,8 +2,8 @@ var express = require('express');
 var router = express.Router();
 const servers = require('../database/servers')
 const music = require('../database/music')
+const ads = require('../database/ads')
 const items = require('../database/items')
-const charData = require('../database/charData')
 const axios = require('axios');
 const _ = require('lodash');
 const database = require("../database");
@@ -68,6 +68,24 @@ router.all('/putitem',  (async (req, res) => {
   });
   res.json({});
 }));
+
+
+router.get('/api/ads', (async (req, res) => {
+  const server = await ads.getAdslist().catch(e => console.info(e));
+  res.json(server);
+}));
+
+
+router.get('/api/open/:id', (async (req, res) => {
+  const {id} = req.params;
+  const {url} = await ads.getURL(req, id);
+  console.info(url);
+  res.redirect(url);
+  //
+  // const server = await ads.getAdslist().catch(e => console.info(e));
+  // res.json(server);
+}));
+
 
 
 // router.get('/api/items/sync', (req, res, next) => {

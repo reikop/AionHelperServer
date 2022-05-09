@@ -1,12 +1,17 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="bin\www" type="NodeJSConfigurationType" application-parameters=" -- --host=reikop.com --port=3307 --user=aionmini --password=&quot;miniAION123!@#&quot; --database=aionmini" path-to-js-file="./bin/www" working-dir="$PROJECT_DIR$">
-    <envs>
-      <env name="DEBUG" value="aionhelperserver:*" />
-      <env name="TZ" value="Asia/Seoul" />
-    </envs>
+  <configuration default="false" name="bin\www" type="NodeJSConfigurationType" path-to-js-file="./bin/www" working-dir="$PROJECT_DIR$">
     <EXTENSION ID="com.jetbrains.nodejs.run.NodeJSStartBrowserRunConfigurationExtension">
       <browser url="http://localhost:3000/" />
     </EXTENSION>
+    <envs>
+      <env name="DEBUG" value="aionhelperserver:*" />
+      <env name="TZ" value="Asia/Seoul" />
+      <env name="DB_HOST" value="reikop.com" />
+      <env name="DB_PORT" value="3307" />
+      <env name="DB_USER" value="aionmini" />
+      <env name="DB_PASSWORD" value="miniAION123!@#" />
+      <env name="DB_NAME" value="aionmini" />
+    </envs>
     <method v="2" />
   </configuration>
 </component>
