@@ -9,9 +9,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(function (req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', 'https://reikop.github.io');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PATCH');
-    res.setHeader('Access-Control-Allow-Headers', '*');
+    const corsWhitelist = [
+        'https://reikop.github.io',
+        'https://reikop.io',
+    ];
+    if (corsWhitelist.indexOf(req.headers.origin) !== -1) {
+        res.header('Access-Control-Allow-Origin', req.headers.origin);
+        res.header('Access-Control-Allow-Methods', '*');
+        res.header('Access-Control-Allow-Headers', '*');
+    }
+
     next();
 });
 
