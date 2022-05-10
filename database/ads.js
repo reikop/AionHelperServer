@@ -11,4 +11,4 @@ module.exports = {
         await database.insert("INSERT INTO ads_log (ip_addr, ads_idx, agent) VALUES (?, ? , ?)", [ip ,id,userAgent]);
         return await database.query("SELECT url FROM  ads WHERE idx = ?", [id]);
     },
-}정
+}
