@@ -2,7 +2,7 @@
 const database = require('./index')
 module.exports = {
     async getAdslist() {
-        return await database.query("SELECT * FROM  ads order by rand() ");
+        return await database.query("SELECT * FROM  ads where enddt > now() order by rand() ");
     },
 
     async getURL(request, id) {
@@ -11,4 +11,4 @@ module.exports = {
         await database.insert("INSERT INTO ads_log (ip_addr, ads_idx, agent) VALUES (?, ? , ?)", [ip ,id,userAgent]);
         return await database.query("SELECT url FROM  ads WHERE idx = ?", [id]);
     },
-}
+}정
