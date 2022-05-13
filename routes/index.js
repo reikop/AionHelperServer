@@ -1,5 +1,6 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const fs = require('fs');
 const servers = require('../database/servers')
 const music = require('../database/music')
 const ads = require('../database/ads')
@@ -72,7 +73,13 @@ router.all('/putitem',  (async (req, res) => {
 
 router.get('/api/ads', (async (req, res) => {
   const server = await ads.getAdslist().catch(e => console.info(e));
-  res.json(server);
+  res.json(server.map(s => {
+    const path = `./public/${s.src}`;
+    if(fs.existsSync(path)){
+      s.file = Buffer.from(fs.readFileSync(path)).toString('base64');
+    }
+    return s;
+  }));
 }));
 
 

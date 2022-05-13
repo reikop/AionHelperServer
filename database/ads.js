@@ -2,7 +2,7 @@
 const database = require('./index')
 module.exports = {
     async getAdslist() {
-        return await database.query("SELECT * FROM  ads where enddt > now() order by rand() ");
+        return await database.list("SELECT * FROM  ads where enddt > now() order by rand() ");
     },
 
     async getURL(request, id) {
