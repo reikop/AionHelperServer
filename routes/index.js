@@ -54,9 +54,9 @@ router.get('/api/music', (async (req, res) => {
   res.json(server);
 }));
 
-router.patch('/api/music/:id', (async (req, res) => {
-  const {id} = req.params;
-  res.json(music.registServer(id, req.body.id));
+router.patch('/api/music/:id/:bot', (async (req, res) => {
+  const {id, bot} = req.params;
+  res.json(music.registServer(id, req.body.id, bot));
 }));
 router.delete('/api/music/:gid/:id', (async (req, res) => {
   res.json(music.deregistServer(req.body.gid, req.body.id));
